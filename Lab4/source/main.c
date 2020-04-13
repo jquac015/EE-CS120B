@@ -1,8 +1,8 @@
 /*	Author: Justin Quach jquac015@ucr.edu
  *  Partner(s) Name: 
  *	Lab Section:
- *	Assignment: Lab 4  Exercise 1
- *	Exercise Description: Push Button FSM
+ *	Assignment: Lab 4  Exercise 2
+ *	Exercise Description: Increment and decrement with PA0 and PA1 respectively, reset with both
  *
  *	I acknowledge all content contained herein, excluding template or example
  *	code, is my own original work.
@@ -12,57 +12,74 @@
 #include "simAVRHeader.h"
 #endif
 
-enum Push_States{PB_Start, PB0_ON, PB0_WAIT, PB1_ON, PB1_WAIT}Push_State;
+enum Counter_States{Start, STANDBY, INC, DEC, INC_WAIT, DEC_WAIT, RESET}Counter_State;
 
-void ButtonSM(){
-	switch(Push_State){
-		case PB_Start:
-			Push_State = PB0_ON;
+void CounterSM(){
+	switch(Counter_State){
+		case Start:
+			Counter_State = STANDBY;
 			break;
-		case PB0_ON:
-			if(PINA&0x01){
-				Push_State = PB1_WAIT;
+		case STANDBY:
+			if((PINA == 0x03)){
+				Counter_State = RESET;
+			}else if((PINA&0x02) && (PINC>0x00)){
+				Counter_State = DEC;
+			}else if((PINA&0x01) && (PINC<0x09)){
+				Counter_State = INC;
 			}else{
-				Push_State = PB0_ON;
+				Counter_State = STANDBY;
 			}
 			break;
-		case PB1_WAIT:
-			if(!(PINA&0x01)){
-				Push_State = PB1_ON;
+		case INC:
+			Counter_State = INC_WAIT;
+			break;
+		case DEC:
+			Counter_State = DEC_WAIT;
+			break;
+		case INC_WAIT:
+			if(PINA == 0x03){
+				Counter_State = RESET;
+			}else if(PINA == 0x00){
+				Counter_State = STANDBY;
 			}else{
-				Push_State = PB1_WAIT;
+				Counter_State = INC_WAIT;
 			}
 			break;
-		case PB1_ON:
-			if(PINA&0x01){
-				Push_State = PB0_WAIT;
+		case DEC_WAIT:
+			if(PINA == 0x03){
+				Counter_State = RESET;
+			}else if(PINA == 0x00){
+				Counter_State = STANDBY;
 			}else{
-				Push_State = PB1_ON;
+				Counter_State = DEC_WAIT;
 			}
 			break;
-		case PB0_WAIT:
-			if(!(PINA&0x01)){
-				Push_State = PB0_ON;
+		case RESET:
+			if(PINA == 0x00){
+				Counter_State = STANDBY;
 			}else{
-				Push_State = PB0_WAIT;
+				Counter_State = RESET;
 			}
 			break;
 		default:
-			Push_State = PB0_ON;
+			Counter_State = Start;
 			break;
 	}
-	switch(Push_State){
-		case PB0_ON:
-			PORTB = 0x01;
+	switch(Counter_State){
+		case STANDBY:
 			break;
-		case PB1_WAIT:
-			PORTB = 0x02;
+		case INC:
+			PORTC = PINC+1;
 			break;
-		case PB1_ON:
-			PORTB = 0x02;
+		case DEC:
+			PORTC = PINC-1;
 			break;
-		case PB0_WAIT:
-			PORTB = 0x01;
+		case INC_WAIT:
+			break;
+		case DEC_WAIT:
+			break;
+		case RESET:
+			PORTC = 0x00;
 			break;
 		default:
 			break;
@@ -72,11 +89,11 @@ void ButtonSM(){
 int main(void) {
 	DDRA = 0x00;
 	PORTA = 0x00;
-	DDRB = 0xFF;
-	PORTB = 0x00;
-	Push_State = PB_Start;
+	DDRC = 0xFF;
+	PORTC = 0x07;
+	Counter_State = Start;
     while (1) {
-	ButtonSM();	
+	CounterSM();
     }
     return 0;
 }
