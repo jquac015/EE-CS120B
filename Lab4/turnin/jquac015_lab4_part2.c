@@ -13,21 +13,19 @@
 #endif
 
 enum Counter_States{Start, STANDBY, INC, DEC, INC_WAIT, DEC_WAIT, RESET}Counter_State;
-unsigned char count;
 
 void CounterSM(){
 	switch(Counter_State){
 		case Start:
-			count = 0x07;
 			Counter_State = STANDBY;
 			break;
 		case STANDBY:
-			if((PINA&0x01) && (count<0x09)){
-				Counter_State = INC;
-			}else if((PINA&0x02) && (count>0x00)){
-				Counter_State = DEC;
-			}else if((PINA&0x01) && (PINA&0x02)){
+			if((PINA == 0x03)){
 				Counter_State = RESET;
+			}else if((PINA&0x02) && (PINC>0x00)){
+				Counter_State = DEC;
+			}else if((PINA&0x01) && (PINC<0x09)){
+				Counter_State = INC;
 			}else{
 				Counter_State = STANDBY;
 			}
@@ -71,20 +69,17 @@ void CounterSM(){
 		case STANDBY:
 			break;
 		case INC:
-			count = count+1;
-			PORTC = count;
+			PORTC = PINC+1;
 			break;
 		case DEC:
-			count = count-1;
-			PORTC = count;
+			PORTC = PINC-1;
 			break;
 		case INC_WAIT:
 			break;
 		case DEC_WAIT:
 			break;
 		case RESET:
-			count = 0x00;
-			PORTC = count;
+			PORTC = 0x00;
 			break;
 		default:
 			break;
@@ -95,7 +90,7 @@ int main(void) {
 	DDRA = 0x00;
 	PORTA = 0x00;
 	DDRC = 0xFF;
-	PORTC = 0x00;
+	PORTC = 0x07;
 	Counter_State = Start;
     while (1) {
 	CounterSM();
