@@ -18,6 +18,7 @@ unsigned char count;
 void CounterSM(){
 	switch(Counter_State){
 		case Start:
+			count = 0x07;
 			Counter_State = STANDBY;
 			break;
 		case STANDBY:
@@ -67,9 +68,6 @@ void CounterSM(){
 			break;
 	}
 	switch(Counter_State){
-		case Start:
-			count = 0x07;
-			break;
 		case STANDBY:
 			break;
 		case INC:
