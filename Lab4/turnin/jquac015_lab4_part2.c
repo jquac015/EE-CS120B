@@ -69,6 +69,7 @@ void CounterSM(){
 	switch(Counter_State){
 		case Start:
 			count = 0x07;
+			break;
 		case STANDBY:
 			break;
 		case INC:
