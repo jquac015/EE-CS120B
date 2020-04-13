@@ -1,8 +1,8 @@
 /*	Author: Justin Quach jquac015@ucr.edu
  *  Partner(s) Name: 
  *	Lab Section:
- *	Assignment: Lab 4  Exercise 2
- *	Exercise Description: Increment and decrement with PA0 and PA1 respectively, reset with both
+ *	Assignment: Lab 4  Exercise 3
+ *	Exercise Description: Deadbolt
  *
  *	I acknowledge all content contained herein, excluding template or example
  *	code, is my own original work.
