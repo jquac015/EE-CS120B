@@ -22,9 +22,9 @@ void CounterSM(){
 		case STANDBY:
 			if((PINA == 0x03)){
 				Counter_State = RESET;
-			}else if((PINA&0x02) && (PINC>0x00)){
+			}else if((PINA&0x02) && (PINC>0)){
 				Counter_State = DEC;
-			}else if((PINA&0x01) && (PINC<0x09)){
+			}else if((PINA&0x01) && (PINC<9)){
 				Counter_State = INC;
 			}else{
 				Counter_State = STANDBY;
